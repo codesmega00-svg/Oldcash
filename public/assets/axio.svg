@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="axioGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f3ff"/>
+      <stop offset="100%" stop-color="#7928ca"/>
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="10" fill="#080e1c" stroke="#00f3ff" stroke-width="2"/>
+  <!-- Arbitrage dynamic loop / A shape -->
+  <polygon points="24,9 38,36 30,36 24,24 18,36 10,36" fill="url(#axioGrad)"/>
+  <polygon points="24,17 28,26 20,26" fill="#080e1c"/>
+  <circle cx="24" cy="27" r="2.5" fill="#00f3ff"/>
+</svg>

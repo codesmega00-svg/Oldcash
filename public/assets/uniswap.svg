@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="uniGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff007a"/>
+      <stop offset="100%" stop-color="#9a00ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="10" fill="#180a1c" stroke="#ff007a" stroke-width="2"/>
+  <!-- Unicorn head silhouette stylized -->
+  <path d="M14 36 C14 30, 18 26, 21 24 C19 21, 20 17, 24 16 C25 13, 29 11, 35 11 C32 15, 33 18, 30 20 C34 23, 34 27, 32 30 C30 33, 26 36, 14 36 Z" fill="url(#uniGrad)"/>
+  <!-- Unicorn Horn -->
+  <polygon points="26,15 38,7 30,19" fill="#ffd100"/>
+  <!-- Eye -->
+  <circle cx="28" cy="22" r="1.5" fill="#ffffff"/>
+  <!-- Sparkles -->
+  <circle cx="11" cy="14" r="1.5" fill="#ff70ba"/>
+  <circle cx="37" cy="34" r="1.5" fill="#ffd100"/>
+</svg>
