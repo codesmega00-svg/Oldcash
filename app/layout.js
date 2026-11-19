@@ -19,8 +19,11 @@ export default function RootLayout({ children }) {
             __html: `
               (function() {
                 try {
-                  var t = localStorage.getItem('oldcash-theme') || 'pink';
-                  if (t === 'light') t = 'pink';
+                  var t = localStorage.getItem('oldcash-theme');
+                  if (!t || t === 'light') {
+                    t = 'pink';
+                    try { localStorage.setItem('oldcash-theme', 'pink'); } catch(e) {}
+                  }
                   document.documentElement.setAttribute('data-theme', t);
                 } catch(e) {}
               })();

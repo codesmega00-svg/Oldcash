@@ -25,6 +25,7 @@ export default function ThemeToggle() {
     } else {
       setTheme('pink');
       document.documentElement.setAttribute('data-theme', 'pink');
+      try { localStorage.setItem('oldcash-theme', 'pink'); } catch(e) {}
     }
 
     const handleClickOutside = (e) => {
