@@ -19,13 +19,12 @@ export default function ThemeToggle() {
   useEffect(() => {
     setMounted(true);
     const saved = localStorage.getItem('oldcash-theme');
-    if (saved && ['pink', 'light-video', 'sunset', 'cyber', 'matrix5', 'dark', 'light'].includes(saved)) {
-      const normalized = saved === 'light' ? 'pink' : saved;
-      setTheme(normalized);
-      document.documentElement.setAttribute('data-theme', normalized);
+    if (saved && ['pink', 'light-video', 'sunset', 'cyber', 'matrix5', 'dark'].includes(saved)) {
+      setTheme(saved);
+      document.documentElement.setAttribute('data-theme', saved);
     } else {
-      const current = document.documentElement.getAttribute('data-theme') || 'pink';
-      setTheme(current === 'light' ? 'pink' : current);
+      setTheme('pink');
+      document.documentElement.setAttribute('data-theme', 'pink');
     }
 
     const handleClickOutside = (e) => {

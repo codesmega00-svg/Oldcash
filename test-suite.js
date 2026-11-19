@@ -76,9 +76,10 @@ async function runAllTests() {
   assert(!hasParenthesisAmountOnBtn, 'Claim button text cleaned: no (+... SOL · ≈ $... USD) written inside button');
   assert(btnInner.includes('⚡ ONE-CLICK CLAIM ALL MEV REWARDS'), 'Claim button renders clean "⚡ ONE-CLICK CLAIM ALL MEV REWARDS"');
 
-  // 1.3 Security Headers Check on Local Server
+  // 1.3 Security Headers & Default Theme Check on Local Server
   const homeRes = await fetchUrl('/');
   assert(homeRes.status === 200, 'Home page returns 200 OK');
+  assert(homeRes.body.includes('data-theme="pink"'), 'Arbio Pink is default HTML theme attribute (data-theme="pink")');
   assert(homeRes.headers['x-frame-options'] === 'DENY', 'X-Frame-Options: DENY present (clickjacking protection)');
   assert(homeRes.headers['x-content-type-options'] === 'nosniff', 'X-Content-Type-Options: nosniff present (MIME protection)');
   assert(Boolean(homeRes.headers['strict-transport-security']), 'HSTS strict-transport-security present');

@@ -12,14 +12,15 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-theme="pink" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 try {
-                  var t = localStorage.getItem('oldcash-theme') || 'light';
+                  var t = localStorage.getItem('oldcash-theme') || 'pink';
+                  if (t === 'light') t = 'pink';
                   document.documentElement.setAttribute('data-theme', t);
                 } catch(e) {}
               })();
