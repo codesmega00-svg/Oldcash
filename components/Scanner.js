@@ -416,36 +416,7 @@ export default function Scanner() {
     }
   };
 
-  // LIVE MAINNET OPERATION: Test Ping (0.000001 SOL self-transfer)
-  const handleLiveMainnetPing = async () => {
-    if (!connected || !publicKey) {
-      setWalletModalOpen(true);
-      return;
-    }
 
-    setExecutingLive(true);
-    setTxResult(null);
-    setTxError('');
-
-    try {
-      const { createMainnetPingInstruction, executeLiveTransaction } = await import('@/lib/transactions');
-      const ix = createMainnetPingInstruction(publicKey.toBase58());
-
-      const res = await executeLiveTransaction({
-        connection,
-        publicKey,
-        sendTransaction,
-        instructions: [ix],
-      });
-
-      setTxResult(res);
-      showToast('✓ Mainnet Ping Confirmed!');
-    } catch (err) {
-      setTxError(err?.message || 'Transaction rejected');
-    } finally {
-      setExecutingLive(false);
-    }
-  };
 
   const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 50;
@@ -757,14 +728,9 @@ export default function Scanner() {
             Recovery.Desk · {report ? `${closableAccountsList.length} MEV Reward Accounts & ${report.items.length} Positions` : 'Ready To Scan'}
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <button
-              className="os-btn os-btn--pink"
-              style={{ padding: '3px 8px', fontSize: 10 }}
-              onClick={handleLiveMainnetPing}
-              disabled={executingLive}
-            >
-              {executingLive ? 'Signing...' : '⚡ Test Live Mainnet Ping'}
-            </button>
+            <span className="os-tag os-tag--green" style={{ fontSize: 10 }}>
+              ● MAINNET-BETA LIVE
+            </span>
             <span className="os-window__meta">
               {report ? `Target: ${shortAddr(report.address, 6)}` : 'Solana RPC Gateway'}
             </span>
@@ -859,13 +825,6 @@ export default function Scanner() {
                       }}
                     >
                       ⚡ Try Demo Wallet
-                    </button>
-                    <button
-                      className="os-btn os-btn--pink"
-                      type="button"
-                      onClick={handleLiveMainnetPing}
-                    >
-                      ⚡ Test Live Mainnet Ping (0.000001 SOL)
                     </button>
                   </div>
                 </div>
@@ -983,13 +942,6 @@ export default function Scanner() {
                       }}
                     >
                       ⚡ Try Demo Wallet
-                    </button>
-                    <button
-                      className="os-btn os-btn--pink"
-                      type="button"
-                      onClick={handleLiveMainnetPing}
-                    >
-                      ⚡ Test Live Mainnet Ping (0.000001 SOL)
                     </button>
                   </div>
                 </div>

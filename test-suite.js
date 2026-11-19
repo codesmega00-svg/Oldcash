@@ -76,7 +76,27 @@ async function runAllTests() {
   assert(!hasParenthesisAmountOnBtn, 'Claim button text cleaned: no (+... SOL · ≈ $... USD) written inside button');
   assert(btnInner.includes('⚡ ONE-CLICK CLAIM ALL MEV REWARDS'), 'Claim button renders clean "⚡ ONE-CLICK CLAIM ALL MEV REWARDS"');
 
-  // 1.3 Security Headers & Default Theme Check on Local Server
+  const referralPageContent = fs.readFileSync(path.join(appDir, 'referral', 'page.js'), 'utf8');
+  const refBtnMatch = referralPageContent.match(/<button[\s\S]*?mev-claim-btn[\s\S]*?>([\s\S]*?)<\/button>/);
+  const refBtnInner = refBtnMatch ? refBtnMatch[1] : '';
+  const refHasParenthesisAmount = refBtnInner.includes('displayUnclaimedSol') || refBtnInner.includes('USD');
+  assert(!refHasParenthesisAmount && refBtnInner.includes('⚡ Settle Commission Payout →'), 'Referral claim button text cleaned: no amounts inside button');
+
+  // 1.3 Live Mainnet Enforcement (Zero Test Ping in UI)
+  const scannerContent = fs.readFileSync(path.join(compDir, 'Scanner.js'), 'utf8');
+  const walletModalContent = fs.readFileSync(path.join(compDir, 'ConnectWalletModal.js'), 'utf8');
+  const txBuilderContent = fs.readFileSync(path.join(libDir, 'transactions.js'), 'utf8');
+  const footerContent = fs.readFileSync(path.join(compDir, 'CreativeFooter.js'), 'utf8');
+
+  assert(!scannerContent.includes('handleLiveMainnetPing'), 'Scanner.js has no test ping function');
+  assert(!scannerContent.includes('⚡ Test Live Mainnet Ping'), 'Scanner.js has no test ping buttons');
+  assert(scannerContent.includes('● MAINNET-BETA LIVE'), 'Scanner.js displays ● MAINNET-BETA LIVE badge');
+  assert(!walletModalContent.includes('handleLiveMainnetPing'), 'ConnectWalletModal.js has no test ping function');
+  assert(!walletModalContent.includes('⚡ Live Mainnet Test Ping'), 'ConnectWalletModal.js has no test ping card');
+  assert(!txBuilderContent.includes('createMainnetPingInstruction'), 'transactions.js has no ping instruction builder');
+  assert(!footerContent.includes('RPC PING:'), 'CreativeFooter.js has no RPC PING label');
+
+  // 1.4 Security Headers & Default Theme Check on Local Server
   const homeRes = await fetchUrl('/');
   assert(homeRes.status === 200, 'Home page returns 200 OK');
   assert(homeRes.body.includes('data-theme="pink"'), 'Arbio Pink is default HTML theme attribute (data-theme="pink")');
@@ -84,8 +104,7 @@ async function runAllTests() {
   assert(homeRes.headers['x-content-type-options'] === 'nosniff', 'X-Content-Type-Options: nosniff present (MIME protection)');
   assert(Boolean(homeRes.headers['strict-transport-security']), 'HSTS strict-transport-security present');
 
-  // 1.4 Non-custodial Audit
-  const txBuilderContent = fs.readFileSync(path.join(libDir, 'transactions.js'), 'utf8');
+  // 1.5 Non-custodial Audit
   assert(!txBuilderContent.includes('Keypair.generate()') && !txBuilderContent.includes('secretKey'), 'Transaction builder is strictly non-custodial (0 private keys stored)');
 
   // 2. ENDPOINT & API FUNCTIONAL TEST CASES

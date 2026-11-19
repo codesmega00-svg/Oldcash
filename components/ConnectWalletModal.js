@@ -7,8 +7,6 @@ export default function ConnectWalletModal({ isOpen, onClose, onScanWallet }) {
   const { wallets, select, wallet, connect, connected, publicKey, disconnect, sendTransaction } = useWallet();
   const { connection } = useConnection();
   const [balance, setBalance] = useState(null);
-  const [testingPing, setTestingPing] = useState(false);
-  const [pingResult, setPingResult] = useState(null);
   const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -51,34 +49,6 @@ export default function ConnectWalletModal({ isOpen, onClose, onScanWallet }) {
       navigator.clipboard.writeText(publicKey.toBase58());
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  const handleLiveMainnetPing = async () => {
-    if (!connected || !publicKey) return;
-    setTestingPing(true);
-    setPingResult(null);
-    setErrorMsg('');
-
-    try {
-      const { createMainnetPingInstruction, executeLiveTransaction } = await import('@/lib/transactions');
-      const ix = createMainnetPingInstruction(publicKey.toBase58());
-
-      const res = await executeLiveTransaction({
-        connection,
-        publicKey,
-        sendTransaction,
-        instructions: [ix],
-      });
-
-      setPingResult(res);
-      // Refresh balance
-      const b = await connection.getBalance(publicKey);
-      setBalance(b / LAMPORTS_PER_SOL);
-    } catch (err) {
-      setErrorMsg(err?.message || 'Transaction rejected or timed out');
-    } finally {
-      setTestingPing(false);
     }
   };
 
@@ -159,60 +129,7 @@ export default function ConnectWalletModal({ isOpen, onClose, onScanWallet }) {
                 </div>
               </div>
 
-              {/* LIVE MAINNET TEST OPERATION */}
-              <div
-                style={{
-                  background: 'var(--white)',
-                  border: 'var(--border) solid var(--ink)',
-                  padding: '14px',
-                  marginBottom: 16,
-                  boxShadow: '3px 3px 0 var(--ink)',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 12, fontWeight: 700, textTransform: 'uppercase' }}>
-                    ⚡ Live Mainnet Test Ping
-                  </span>
-                  <span className="os-tag os-tag--green">Zero Loss</span>
-                </div>
-                <p style={{ fontSize: 12, color: 'var(--ink-86)', marginBottom: 12, lineHeight: 1.4 }}>
-                  Sends a <strong>0.000001 SOL</strong> self-transfer to your own wallet to test live on-chain signing and verify that your wallet communicates with Solana Mainnet-Beta.
-                </p>
 
-                <button
-                  className="os-btn os-btn--dark"
-                  style={{ width: '100%', justifyContent: 'center', padding: '10px 14px' }}
-                  onClick={handleLiveMainnetPing}
-                  disabled={testingPing}
-                >
-                  {testingPing ? '⌛ Signing on Mainnet...' : '⚡ Execute Live Mainnet Ping (0.000001 SOL)'}
-                </button>
-
-                {pingResult && (
-                  <div
-                    style={{
-                      marginTop: 10,
-                      padding: '8px 10px',
-                      background: 'var(--green-bg)',
-                      border: '1px solid var(--green)',
-                      fontSize: 12,
-                      fontFamily: 'var(--font-mono)',
-                    }}
-                  >
-                    <div style={{ color: 'var(--green)', fontWeight: 700, marginBottom: 4 }}>
-                      ✓ Mainnet Transaction Confirmed!
-                    </div>
-                    <a
-                      href={pingResult.solscanUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: 'var(--ink)', textDecoration: 'underline', fontSize: 11, wordBreak: 'break-all' }}
-                    >
-                      View on Solscan: {shortAddr(pingResult.signature, 8)} ↗
-                    </a>
-                  </div>
-                )}
-              </div>
 
               {/* Actions */}
               <div style={{ display: 'flex', gap: 10 }}>

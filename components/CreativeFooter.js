@@ -84,7 +84,7 @@ export default function CreativeFooter() {
               <strong className="cr-slot-ticker">#{slot.toLocaleString()}</strong>
             </span>
             <span className="cr-telemetry-item cr-hide-sm">
-              <span>RPC PING:</span>
+              <span>RPC LATENCY:</span>
               <strong style={{ color: '#00ffa3' }}>~118ms</strong>
               <span className="nav-eq-bar" title="Live RPC Stream">
                 <span className="nav-eq-line" />
