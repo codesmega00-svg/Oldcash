@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { Connection, PublicKey } from '@solana/web3.js';
 import {
   isValidAddress,
   shortAddr,
@@ -10,21 +9,52 @@ import {
 } from '@/lib/config';
 
 const RPC_ENDPOINTS = [
-  process.env.NEXT_PUBLIC_SOLANA_RPC || 'https://api.mainnet-beta.solana.com',
+  process.env.SOLANA_RPC,
+  process.env.NEXT_PUBLIC_SOLANA_RPC,
+  'https://api.mainnet-beta.solana.com',
   'https://solana-rpc.publicnode.com',
-  'https://rpc.ankr.com/solana',
-];
+].filter(Boolean);
 
 // 10-second in-memory LRU cache to prevent RPC rate limiting
 const referralCache = new Map();
 const CACHE_TTL_MS = 10_000;
 
-async function fetchWithRpcFallback(fn) {
+async function rpcCall(endpoint, method, params, timeoutMs = 7000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 1,
+        method,
+        params,
+      }),
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      throw new Error(`RPC HTTP ${res.status}: ${res.statusText}`);
+    }
+    const json = await res.json();
+    if (json.error) {
+      throw new Error(json.error.message || `RPC Error ${json.error.code}`);
+    }
+    return json.result;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function fetchRpcWithFallback(method, params) {
   let lastErr;
-  for (const rpc of RPC_ENDPOINTS) {
+  for (const endpoint of RPC_ENDPOINTS) {
     try {
-      const conn = new Connection(rpc, 'confirmed');
-      return await fn(conn);
+      return await rpcCall(endpoint, method, params);
     } catch (err) {
       lastErr = err;
     }
@@ -230,24 +260,19 @@ export async function GET(req) {
       }
     }
 
-    const owner = new PublicKey(targetWallet);
-    const protoPubkey = new PublicKey(PROTOCOL_WALLET);
-
     // Parallel fetch from live Solana Mainnet RPC
-    const [currentSlot, lamports, signatures, protoSignatures] = await fetchWithRpcFallback(async (conn) => {
-      const [slot, bal, sigs, protoSigs] = await Promise.all([
-        conn.getSlot('confirmed').catch(() => 470905000),
-        conn.getBalance(owner).catch(() => 0),
-        conn.getSignaturesForAddress(owner, { limit: 25 }).catch(() => []),
-        conn.getSignaturesForAddress(protoPubkey, { limit: 15 }).catch(() => []),
-      ]);
-      return [slot, bal, sigs, protoSigs];
-    });
+    const [currentSlot, balResult, signatures, protoSignatures] = await Promise.all([
+      fetchRpcWithFallback('getSlot', [{ commitment: 'confirmed' }]).catch(() => 470905000),
+      fetchRpcWithFallback('getBalance', [targetWallet, { commitment: 'confirmed' }]).catch(() => ({ value: 0 })),
+      fetchRpcWithFallback('getSignaturesForAddress', [targetWallet, { limit: 25 }]).catch(() => []),
+      fetchRpcWithFallback('getSignaturesForAddress', [PROTOCOL_WALLET, { limit: 15 }]).catch(() => []),
+    ]);
 
+    const lamports = balResult?.value || 0;
     const balanceSol = +(lamports / 1_000_000_000).toFixed(4);
 
     // Format REAL on-chain network-wide verified claims from protocol wallet
-    const networkActivity = protoSignatures.map((sig, idx) => {
+    const networkActivity = (protoSignatures || []).map((sig, idx) => {
       const timeMs = sig.blockTime ? sig.blockTime * 1000 : now - (idx + 1) * 240000;
       const diffMinutes = Math.max(1, Math.floor((now - timeMs) / 60000));
       const dateStr = diffMinutes < 60
@@ -293,11 +318,10 @@ export async function GET(req) {
     ).toFixed(4);
 
     // Check if targetWallet actually has verified Old Cash referral transactions
-    // In Solana, an Old Cash referral transaction involves both the user and PROTOCOL_WALLET
-    const protoSigSet = new Set(protoSignatures.map((s) => s.signature));
+    const protoSigSet = new Set((protoSignatures || []).map((s) => s.signature));
     const matchingSigs = isProtocolWallet
-      ? protoSignatures
-      : signatures.filter((s) => protoSigSet.has(s.signature));
+      ? protoSignatures || []
+      : (signatures || []).filter((s) => protoSigSet.has(s.signature));
 
     // Format REAL on-chain user activity ONLY if user actually has verified Old Cash claims
     const userActivity = matchingSigs.map((sig, idx) => {
