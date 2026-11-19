@@ -172,6 +172,16 @@ async function runAllTests() {
   assert(cssContent.includes('@media (max-width: 480px)'), 'Narrow phone media query (<= 480px) active');
   assert(cssContent.includes('@media (min-width: 769px) and (max-width: 1024px)'), 'Tablet breakpoint (769px - 1024px) active');
 
+  // 4. MOBILE WALLET & UNIVERSAL LINK VERIFICATION
+  console.log('\n--- 4. MOBILE WALLET & UNIVERSAL LINK VERIFICATION ---');
+  const providersContent = fs.readFileSync(path.join(compDir, 'Providers.js'), 'utf8');
+
+  assert(providersContent.includes('autoConnect={true}'), 'Providers.js has autoConnect={true} for seamless mobile session persistence');
+  assert(walletModalContent.includes('phantom.app/ul/browse'), 'Phantom mobile universal deep link configured in ConnectWalletModal');
+  assert(walletModalContent.includes('solflare.com/ul/v1/browse'), 'Solflare mobile universal deep link configured in ConnectWalletModal');
+  assert(walletModalContent.includes('isMobileDevice') || walletModalContent.includes('isMobile'), 'Mobile user-agent detection active in ConnectWalletModal');
+  assert(walletModalContent.includes('MOBILE 1-TAP CONNECT'), 'Dedicated 1-Tap Mobile Wallet section rendered for mobile visitors');
+
   console.log('\n====================================================');
   console.log(`TOTAL TESTS: ${passed + failed} | PASSED: ${passed} | FAILED: ${failed}`);
   console.log('====================================================');

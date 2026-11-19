@@ -6,15 +6,17 @@ import { shortAddr, LAMPORTS_PER_SOL } from '@/lib/config';
 
 export default function ConnectWalletModal({ isOpen, onClose, onScanWallet }) {
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const { wallets, select, wallet, connect, connected, publicKey, disconnect, sendTransaction } = useWallet();
   const { connection } = useConnection();
   const [balance, setBalance] = useState(null);
   const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Mount tracking for SSR portal
+  // Mount tracking & mobile user agent check
   useEffect(() => {
     setMounted(true);
+    setIsMobile(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
   }, []);
 
   // Prevent background body scroll when modal is open on desktop & mobile
@@ -63,10 +65,32 @@ export default function ConnectWalletModal({ isOpen, onClose, onScanWallet }) {
     setErrorMsg('');
     try {
       select(wName);
-      // If wallet is already selected, trigger connect
       const selectedWallet = wallets.find((w) => w.adapter.name === wName);
+
+      // If wallet extension / in-app provider is ready, connect directly
       if (selectedWallet && selectedWallet.readyState === 'Installed') {
         await selectedWallet.adapter.connect();
+      } else {
+        // Handle mobile browser outside wallet app or desktop without extension
+        const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const currentUrl = typeof window !== 'undefined' ? window.location.href : 'https://oldcash.io';
+        const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://oldcash.io';
+
+        if (wName.toLowerCase().includes('phantom')) {
+          if (isMobileDevice) {
+            window.location.href = `https://phantom.app/ul/browse/${encodeURIComponent(currentUrl)}?ref=${encodeURIComponent(currentOrigin)}`;
+          } else {
+            window.open('https://phantom.app/download', '_blank', 'noopener,noreferrer');
+          }
+        } else if (wName.toLowerCase().includes('solflare')) {
+          if (isMobileDevice) {
+            window.location.href = `https://solflare.com/ul/v1/browse/${encodeURIComponent(currentUrl)}`;
+          } else {
+            window.open('https://solflare.com/download', '_blank', 'noopener,noreferrer');
+          }
+        } else {
+          setErrorMsg(`${wName} not detected. Please install the extension or launch via wallet mobile browser.`);
+        }
       }
     } catch (err) {
       setErrorMsg(err?.message || 'Failed to connect wallet');
@@ -121,7 +145,7 @@ export default function ConnectWalletModal({ isOpen, onClose, onScanWallet }) {
               border: '1px solid var(--ink)',
               fontFamily: 'var(--font-pixel)',
               fontSize: 11,
-              marginBottom: 16,
+              marginBottom: 14,
               textTransform: 'uppercase',
             }}
           >
@@ -195,11 +219,54 @@ export default function ConnectWalletModal({ isOpen, onClose, onScanWallet }) {
                CONNECT PROVIDER SELECTION LIST
                ============================================================ */
             <div>
-              <p style={{ fontSize: 13, color: 'var(--ink-86)', marginBottom: 14, lineHeight: 1.4 }}>
-                Select an installed Solana wallet to scan and execute non-custodial MEV reward claims on Mainnet-Beta:
+              {/* Dedicated 1-Tap Mobile Wallet Deep Link Section */}
+              {isMobile && (
+                <div
+                  style={{
+                    marginBottom: 14,
+                    background: 'var(--grey-1)',
+                    border: '1px solid var(--grey-3)',
+                    padding: '10px 12px',
+                    borderRadius: 2,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 11, fontWeight: 700, color: 'var(--ink)' }}>
+                      📱 MOBILE 1-TAP CONNECT
+                    </span>
+                    <span className="os-tag os-tag--green" style={{ fontSize: 9 }}>AUTO DEEP LINK</span>
+                  </div>
+                  <p style={{ fontSize: 11, color: 'var(--ink-86)', marginBottom: 8, lineHeight: 1.35 }}>
+                    Browsing on mobile? Tap below to launch Old Cash directly in your wallet app:
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                    <a
+                      href={`https://phantom.app/ul/browse/${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}?ref=${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin : '')}`}
+                      className="os-btn os-btn--pink"
+                      style={{ justifyContent: 'center', padding: '8px 6px', fontSize: 11, textDecoration: 'none' }}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span>🟣 Open Phantom</span>
+                    </a>
+                    <a
+                      href={`https://solflare.com/ul/v1/browse/${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+                      className="os-btn os-btn--dark"
+                      style={{ justifyContent: 'center', padding: '8px 6px', fontSize: 11, textDecoration: 'none' }}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span>🟡 Open Solflare</span>
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              <p style={{ fontSize: 13, color: 'var(--ink-86)', marginBottom: 12, lineHeight: 1.4 }}>
+                Select an installed Solana wallet or mobile app to scan and execute non-custodial MEV claims:
               </p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
                 {wallets.map((w) => {
                   const isInstalled = w.readyState === 'Installed';
                   return (
@@ -235,7 +302,7 @@ export default function ConnectWalletModal({ isOpen, onClose, onScanWallet }) {
                         className={`os-tag ${isInstalled ? 'os-tag--green' : ''}`}
                         style={{ fontSize: 10, flexShrink: 0 }}
                       >
-                        {isInstalled ? '● Detected' : 'Available'}
+                        {isInstalled ? '● Detected' : isMobile ? 'Mobile 1-Tap' : 'Available'}
                       </span>
                     </button>
                   );
