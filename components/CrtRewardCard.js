@@ -208,7 +208,7 @@ export default function CrtRewardCard({
                 {executingLive ? (
                   <span>⚡ PROCESSING BATCH ON SOLANA MAINNET...</span>
                 ) : accountsCount > 0 ? (
-                  <span>⚡ ONE-CLICK CLAIM ALL MEV REWARDS (+{totalRentSol} SOL · ≈ ${totalRentUsd} USD)</span>
+                  <span>⚡ ONE-CLICK CLAIM ALL MEV REWARDS</span>
                 ) : (
                   <span>✓ ALL MEV REWARDS ALREADY CLAIMED</span>
                 )}

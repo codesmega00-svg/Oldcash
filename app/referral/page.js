@@ -597,7 +597,7 @@ export default function ReferralPage() {
                         className="mev-claim-btn"
                         onClick={() => setClaimModalOpen(true)}
                       >
-                        ⚡ Settle {displayUnclaimedSol.toFixed(4)} SOL Commission (≈ ${(displayUnclaimedSol * solPrice).toFixed(2)} USD) →
+                        ⚡ Settle Commission Payout →
                       </button>
                     ) : (
                       <button
