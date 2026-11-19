@@ -6,6 +6,8 @@
 # next.js build artifacts
 /.next/
 /out/
+/.open-next/
+.wrangler/
 
 # production
 /build
