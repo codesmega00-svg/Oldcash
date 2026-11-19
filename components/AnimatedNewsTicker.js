@@ -6,7 +6,7 @@ const NEWS_ITEMS = [
   'Recovery Engine Live · Read-only RPC · 0 Capital Required',
   'Whale Detected: 84.55 SOL ($18,160) Found in Single Wallet GgGap6...',
   'Solana MEV Rewards: Dynamic Yield Claimed Per Trade',
-  'Protocols Synced: Pump.fun, Raydium, Axio, Terminal, Uniswap, Kamino & Jupiter',
+  'Protocols Synced: Pump.fun, Raydium, Axiom Trade, FOMO Family, Uniswap, Meteora, Kamino & Jupiter',
   'Non-Custodial Architecture: All Transactions Signed In Your Wallet',
   'Over 3,460 MEV Positions Claimed in 1 Batch Transaction',
 ];

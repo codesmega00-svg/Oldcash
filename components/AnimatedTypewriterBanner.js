@@ -6,7 +6,7 @@ const MESSAGES = [
   'SCANNING SOLANA MAINNET: Locating unclosed positions with guaranteed MEV rewards...',
   'WHALE VERIFIED: Wallet GgGap6ti... unlocked 84.55 SOL ($18,160) across 3,460 accounts.',
   'UNWRAPPING WSOL: Claim MEV Reward & 100% of collateral from Wrapped SOL positions.',
-  'PROTOCOL RADAR: Monitored Axio, Terminal, Pump.fun, Uniswap, Raydium, Kamino & Jupiter positions.',
+  'PROTOCOL RADAR: Monitored Axiom Trade, FOMO Family, Pump.fun, Uniswap, Raydium, Kamino & Jupiter positions.',
   'ZERO RISK GUARANTEE: Read-only RPC inspection. Private keys NEVER leave your local device.',
   'BATCH TRANSACTION ENGINE: Claim MEV rewards from up to 25 positions in a single Solana transaction.',
 ];

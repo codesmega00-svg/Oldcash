@@ -64,7 +64,7 @@ const PROTOCOLS_DOCS = [
     category: 'Cross-Chain SVM DEX',
     badge: 'SVM LIQUIDITY & SWAPS',
     desc: 'Uniswap on the Solana Virtual Machine (app.uniswap.org). Liquidity providers, cross-chain swappers, and automated market makers leave uncollected fee rebates and temporary routing escrow accounts holding native SOL.',
-    recoveryMechanism: 'Old Cash detects empty SVM routing positions and compiles automated reclamation instructions into 1-click non-custodial batch transactions.',
+    recoveryMechanism: 'Old Cash detects empty SVM routing positions and compiles automated recovery instructions into 1-click non-custodial batch transactions.',
     impact: 'Recovers swap routing buffers and uncollected fee lamports across all SVM pools.',
     apiSupport: 'Supported via GET /api/scan?wallet={address}',
   },
