@@ -98,6 +98,11 @@ async function runAllTests() {
   assert(!txBuilderContent.includes('createMainnetPingInstruction'), 'transactions.js has no ping instruction builder');
   assert(!footerContent.includes('RPC PING:'), 'CreativeFooter.js has no RPC PING label');
 
+  // 1.4 Product Tour & Onboarding Verification
+  const tourContent = fs.readFileSync(path.join(compDir, 'ProductTour.js'), 'utf8');
+  assert(tourContent.includes('TOUR_STEPS') && tourContent.includes('STEP 1 OF 5'), 'ProductTour.js includes 5-step guided walkthrough');
+  assert(scannerContent.includes('🗺️ Product Tour'), 'Scanner.js contains 🗺️ Product Tour launcher button');
+
   // 1.4 Security Headers & Default Theme Check on Local Server
   const homeRes = await fetchUrl('/');
   assert(homeRes.status === 200, 'Home page returns 200 OK');

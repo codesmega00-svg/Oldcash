@@ -12475,8 +12475,231 @@ body {
 }
 
 /* ============================================================
-   EXTRA SMALL MOBILE SCREENS (<= 480px)
+   INTERACTIVE PRODUCT TOUR WIDGET & MODAL
    ============================================================ */
+
+.product-tour-pill {
+  position: fixed;
+  bottom: 22px;
+  left: 22px;
+  z-index: 990;
+  user-select: none;
+}
+
+.product-tour-launch-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ink);
+  color: var(--pink);
+  border: var(--border) solid var(--pink);
+  box-shadow: 4px 4px 0 #000;
+  padding: 8px 14px;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: all 0.15s ease;
+}
+
+.product-tour-launch-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0 #000;
+  background: #000;
+  color: #fff;
+}
+
+.product-tour-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.product-tour-step-badge {
+  background: var(--magenta);
+  color: #fff;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  letter-spacing: 0.08em;
+}
+
+.product-tour-card {
+  max-width: 620px;
+}
+
+.tour-stepper-header {
+  background: var(--grey-1);
+  border-bottom: var(--border) solid var(--ink);
+  padding: 10px 14px;
+}
+
+.tour-steps-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.tour-step-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: var(--white);
+  border: 1px solid var(--grey-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  color: var(--ink);
+}
+
+.tour-step-pill:hover {
+  border-color: var(--ink);
+}
+
+.tour-step-pill--active {
+  background: var(--pink) !important;
+  color: var(--ink) !important;
+  border-color: var(--ink) !important;
+  font-weight: 700;
+}
+
+.tour-step-pill--done {
+  background: #e2fbe8;
+  border-color: var(--green);
+  color: #0d5f2a;
+}
+
+.tour-progress-bar-wrap {
+  width: 100%;
+  height: 4px;
+  background: var(--grey-2);
+  margin-top: 2px;
+}
+
+.tour-progress-bar-fill {
+  height: 100%;
+  background: var(--magenta);
+  transition: width 0.25s ease-in-out;
+}
+
+.tour-card-body {
+  padding: 20px;
+}
+
+.tour-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.tour-step-counter {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+.tour-step-title {
+  font-family: var(--font-disp);
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  line-height: 1.25;
+}
+
+.tour-step-lead {
+  font-size: 13px;
+  color: var(--ink-86);
+  line-height: 1.45;
+  margin-bottom: 14px;
+}
+
+.tour-step-box {
+  background: var(--grey-1);
+  border: 1px solid var(--grey-3);
+  padding: 12px 14px;
+}
+
+.tour-box-title {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+}
+
+.tour-bullet-list {
+  margin: 0;
+  padding-left: 18px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.tour-action-jump-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 10px 14px;
+  font-size: 12px;
+}
+
+.tour-footer-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  background: var(--grey-1);
+  border-top: var(--border) solid var(--ink);
+  gap: 10px;
+}
+
+.tour-nav-btn {
+  padding: 8px 14px;
+  font-size: 11px;
+}
+
+.tour-skip-btn {
+  background: transparent !important;
+  border: 1px dashed var(--grey-3) !important;
+  color: var(--ink-86) !important;
+  padding: 8px 12px;
+  font-size: 11px;
+}
+
+@media (max-width: 768px) {
+  .product-tour-pill {
+    bottom: 16px;
+    left: 16px;
+  }
+
+  .product-tour-launch-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .product-tour-step-badge {
+    display: none;
+  }
+
+  .tour-step-title {
+    font-size: 17px;
+  }
+
+  .tour-step-pill-text {
+    display: none;
+  }
+}
+
 @media (max-width: 480px) {
   .modal-backdrop {
     padding: 8px;

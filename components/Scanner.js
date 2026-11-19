@@ -561,6 +561,15 @@ export default function Scanner() {
                     ◈ Connect Wallet
                   </button>
                 )}
+                <button
+                  className="demo-chip demo-chip--tour"
+                  style={{ background: 'var(--magenta)', color: '#fff', borderColor: 'var(--ink)', fontWeight: 700 }}
+                  type="button"
+                  onClick={() => window.dispatchEvent(new CustomEvent('open-oldcash-tour'))}
+                  title="Open interactive step-by-step product walkthrough"
+                >
+                  🗺️ Product Tour
+                </button>
               </div>
 
               <div>

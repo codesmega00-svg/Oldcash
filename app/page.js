@@ -5,6 +5,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 import LiveCryptoTicker from '@/components/LiveCryptoTicker';
 import ThemeBackground from '@/components/ThemeBackground';
 import MascotWidget from '@/components/MascotWidget';
+import ProductTour from '@/components/ProductTour';
 import AnimatedNewsTicker from '@/components/AnimatedNewsTicker';
 import AnimatedTypewriterBanner from '@/components/AnimatedTypewriterBanner';
 import LiveNetworkStats from '@/components/LiveNetworkStats';
@@ -63,6 +64,9 @@ const FAQ = [
 export default function Page() {
   return (
     <>
+      {/* Interactive 5-Step Product Tour Walkthrough */}
+      <ProductTour />
+
       {/* Dynamic Animated Theme Background (Video / Cosmic / Ambient) */}
       <ThemeBackground />
 
