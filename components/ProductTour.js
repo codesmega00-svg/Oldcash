@@ -1,84 +1,78 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import Link from 'next/link';
 
 const TOUR_STEPS = [
   {
     step: 1,
-    badge: 'STEP 1 OF 5',
-    tag: 'WALLET CONNECTION',
-    title: 'Connect Your Solana Wallet',
-    lead: 'Click the "◈ Connect Wallet" button to securely link your wallet on Solana Mainnet-Beta.',
+    tag: 'STEP 1 OF 5 · WALLET CONNECTION',
+    selector: '[data-tour="connect-wallet"]',
+    title: '◈ Connect Your Solana Wallet',
+    lead: 'Click the "◈ Connect Wallet" button in the top navigation bar to link your Phantom, Solflare, or Backpack wallet on Solana Mainnet-Beta.',
     bullets: [
-      'Supports Phantom, Solflare, Backpack, and all Wallet-Standard providers.',
-      '100% Non-Custodial: We never request, read, or store private keys or seed phrases.',
-      'Don\'t have a wallet handy? You can click "⚡ Try Demo Wallet" to test the full recovery flow instantly.',
+      '100% Non-Custodial: We never ask for, read, or store private keys or seed phrases.',
+      'Approved via official Wallet-Standard browser APIs.',
     ],
-    targetId: 'scanner',
-    actionText: '◈ Open Connect Wallet Modal',
-    actionType: 'wallet',
+    actionLabel: '👉 Click Here to Open Connect Wallet',
+    actionType: 'open-wallet',
+    fallbackTargetId: 'scanner',
   },
   {
     step: 2,
-    badge: 'STEP 2 OF 5',
-    tag: 'DEEP ON-CHAIN SCAN',
-    title: 'Scan Any Solana Address',
-    lead: 'Paste any public Solana wallet address into the search terminal and click "⚡ Scan Wallet".',
+    tag: 'STEP 2 OF 5 · ON-CHAIN RPC SCAN',
+    selector: '[data-tour="demo-pills"]',
+    title: '🔍 Scan Address or Try Demo',
+    lead: 'Paste any public Solana address into the search bar, or click any of the 4 Quick Demos below to inspect live on-chain balances.',
     bullets: [
-      'Queries live Solana Mainnet RPC nodes in real-time across Token-2022 and SPL accounts.',
-      'Detects forgotten empty token accounts, closed market positions, and uncollected MEV yield.',
-      'You can also click any of the 4 quick demo pills: Jupiter Whale, Raydium LP, Pump.fun Alpha, or Meteora LP.',
+      'Token-2022 & standard SPL token accounts scanned via live RPC.',
+      'Detects empty accounts, closed DEX markets, and uncollected MEV rewards.',
     ],
-    targetId: 'scanner',
-    actionText: '🔍 Scroll to Search Bar',
-    actionType: 'scroll-search',
+    actionLabel: '⚡ Click Here to Run "Pump.fun Alpha" Demo',
+    actionType: 'run-demo',
+    fallbackTargetId: 'scanner',
   },
   {
     step: 3,
-    badge: 'STEP 3 OF 5',
-    tag: 'AUDIT MATRIX',
-    title: 'Review The MEV Reward Matrix & CRT Card',
-    lead: 'Inspect your discovered MEV rewards on the holographic CRT Reward Card.',
+    tag: 'STEP 3 OF 5 · REWARD AUDIT',
+    selector: '[data-tour="crt-card"]',
+    title: '💰 Discovered MEV Rewards & CRT Card',
+    lead: 'The holographic CRT card reveals your total recoverable native SOL (+SOL) and converts it to live USD using real-time market spot rates.',
     bullets: [
-      'Shows your total recoverable balance in native SOL (+SOL) with live USD spot conversion.',
-      'Itemizes each individual closable position, protocol source, and token mint address.',
-      'Reveals unwrapped WSOL collateral and protocol incentives waiting to be reclaimed.',
+      'View individual closable positions in the Recovery.Desk.',
+      'Check unwrapped WSOL collateral and estimated gas (~0.000005 SOL).',
     ],
-    targetId: 'how',
-    actionText: '📊 Scroll to Architecture & Coverage',
-    actionType: 'scroll-how',
+    actionLabel: '📊 Click Here to View Recovery Details',
+    actionType: 'scroll-crt',
+    fallbackTargetId: 'scanner',
   },
   {
     step: 4,
-    badge: 'STEP 4 OF 5',
-    tag: '1-CLICK EXECUTION',
-    title: 'Claim All MEV Rewards In 1 Click',
-    lead: 'Click "⚡ ONE-CLICK CLAIM ALL MEV REWARDS" to claim all positions in one batch.',
+    tag: 'STEP 4 OF 5 · ATOMIC BATCH CLAIM',
+    selector: '[data-tour="claim-btn"]',
+    title: '⚡ 1-Click Batch Claim On Mainnet',
+    lead: 'Click "⚡ ONE-CLICK CLAIM ALL MEV REWARDS" to claim all discovered positions in a single Solana mainnet transaction.',
     bullets: [
-      'Bundles up to 18 position closures into a single Solana transaction.',
-      'Signed exclusively inside your own wallet — zero third-party custody.',
-      'Deposited lamports refund directly back to your address in the same block.',
-      'Pro-Trader Mandate: "Claim after every trade to keep 100% of your SOL safe and liquid."',
+      'Packs up to 18 positions into one atomic transaction.',
+      'Signed exclusively inside your wallet — 100% of reclaimed SOL refunds directly to your balance.',
+      'Rule: Claim after every trade to keep 100% of your SOL safe!',
     ],
-    targetId: 'scanner',
-    actionText: '⚡ Inspect Scanner Execution Area',
-    actionType: 'scroll-scanner',
+    actionLabel: '⚡ Click Here to Highlight Claim Button',
+    actionType: 'highlight-claim',
+    fallbackTargetId: 'scanner',
   },
   {
     step: 5,
-    badge: 'STEP 5 OF 5',
-    tag: '22% AFFILIATE REVENUE',
-    title: 'Earn 22% Lifetime Referral Commissions',
-    lead: 'Visit the Referral Terminal (/referral) to create your custom affiliate link.',
+    tag: 'STEP 5 OF 5 · 22% AFFILIATE REVENUE',
+    selector: '[data-tour="referral-nav"]',
+    title: '🤝 Earn 22% Lifetime Referral Commissions',
+    lead: 'Click "🤝 Referrals (22%)" in the top navigation to visit the Referral Terminal and create your custom affiliate link.',
     bullets: [
-      'Every wallet that claims MEV rewards via your link pays you 22% lifetime commission.',
-      'Commissions are routed straight to your Solana payout wallet atomically on-chain.',
-      'Includes interactive earnings simulator, live volume analytics, and branded share cards.',
+      'Earn 22% of all protocol fees recovered by users who claim through your link.',
+      'Commissions are routed straight to your payout wallet atomically on-chain.',
     ],
-    targetId: null,
-    actionText: '🤝 Visit Referral Terminal →',
-    actionType: 'link-referral',
+    actionLabel: '🤝 Click Here to Go to Referral Terminal →',
+    actionType: 'go-referral',
+    fallbackTargetId: null,
   },
 ];
 
@@ -86,6 +80,9 @@ export default function ProductTour() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [targetRect, setTargetRect] = useState(null);
+  const [viewMode, setViewMode] = useState('spotlight'); // 'spotlight' or 'modal'
+  const resizeTimerRef = useRef(null);
 
   useEffect(() => {
     setMounted(true);
@@ -93,24 +90,56 @@ export default function ProductTour() {
     const handleOpenTour = () => {
       setIsOpen(true);
       setCurrentStepIdx(0);
+      setViewMode('spotlight');
     };
 
     window.addEventListener('open-oldcash-tour', handleOpenTour);
     return () => window.removeEventListener('open-oldcash-tour', handleOpenTour);
   }, []);
 
-  // Prevent background scroll while tour modal is active
+  const updateTargetRect = () => {
+    if (!isOpen) return;
+    const step = TOUR_STEPS[currentStepIdx];
+    let el = document.querySelector(step.selector);
+    if (!el && step.fallbackTargetId) {
+      el = document.getElementById(step.fallbackTargetId);
+    }
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      clearTimeout(resizeTimerRef.current);
+      resizeTimerRef.current = setTimeout(() => {
+        const rect = el.getBoundingClientRect();
+        setTargetRect({
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+          bottom: rect.bottom,
+          right: rect.right,
+        });
+      }, 350);
+    } else {
+      setTargetRect(null);
+    }
+  };
+
   useEffect(() => {
     if (isOpen) {
-      const origOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
+      updateTargetRect();
+      const onScrollOrResize = () => {
+        clearTimeout(resizeTimerRef.current);
+        resizeTimerRef.current = setTimeout(updateTargetRect, 80);
+      };
+      window.addEventListener('resize', onScrollOrResize);
+      window.addEventListener('scroll', onScrollOrResize, { passive: true });
       return () => {
-        document.body.style.overflow = origOverflow;
+        window.removeEventListener('resize', onScrollOrResize);
+        window.removeEventListener('scroll', onScrollOrResize);
       };
     }
-  }, [isOpen]);
+  }, [isOpen, currentStepIdx]);
 
-  // Keyboard navigation: Left/Right arrows for steps, ESC to close
+  // Keyboard navigation
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e) => {
@@ -140,42 +169,81 @@ export default function ProductTour() {
     }
   };
 
-  const handleStepAction = (step) => {
-    if (step.actionType === 'wallet') {
-      setIsOpen(false);
-      // Trigger connect wallet modal
-      const connectBtn = document.querySelector('.site-nav .os-btn--dark');
-      if (connectBtn) {
-        connectBtn.click();
+  const handleActionClick = () => {
+    const step = TOUR_STEPS[currentStepIdx];
+    if (step.actionType === 'open-wallet') {
+      const btn = document.querySelector('[data-tour="connect-wallet"]');
+      if (btn) btn.click();
+      handleNext();
+    } else if (step.actionType === 'run-demo') {
+      const demoBtn = document.querySelector('[data-tour="demo-pills"] button');
+      if (demoBtn) demoBtn.click();
+      setTimeout(() => {
+        handleNext();
+      }, 900);
+    } else if (step.actionType === 'scroll-crt') {
+      const crt = document.querySelector('[data-tour="crt-card"]') || document.getElementById('scanner');
+      if (crt) crt.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      handleNext();
+    } else if (step.actionType === 'highlight-claim') {
+      const claimBtn = document.querySelector('[data-tour="claim-btn"]');
+      if (claimBtn) {
+        claimBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        claimBtn.classList.add('tour-claim-pulse-active');
+        setTimeout(() => claimBtn.classList.remove('tour-claim-pulse-active'), 2000);
       }
-    } else if (step.actionType === 'scroll-search' || step.actionType === 'scroll-scanner') {
-      setIsOpen(false);
-      const el = document.getElementById('scanner');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-        const input = el.querySelector('input');
-        if (input) {
-          setTimeout(() => input.focus(), 500);
-        }
-      }
-    } else if (step.actionType === 'scroll-how') {
-      setIsOpen(false);
-      const el = document.getElementById('how');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      }
-    } else if (step.actionType === 'link-referral') {
+      handleNext();
+    } else if (step.actionType === 'go-referral') {
       setIsOpen(false);
       window.location.href = '/referral';
     }
   };
 
   const current = TOUR_STEPS[currentStepIdx];
-  const progressPercent = Math.round(((currentStepIdx + 1) / TOUR_STEPS.length) * 100);
+
+  // Calculate tooltip popover positioning relative to target element
+  const getTooltipStyle = () => {
+    if (!targetRect || typeof window === 'undefined') {
+      return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' };
+    }
+
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      return {
+        bottom: '16px',
+        left: '12px',
+        right: '12px',
+        maxWidth: 'calc(100vw - 24px)',
+        margin: '0 auto',
+      };
+    }
+
+    // Desktop positioning
+    const spaceBelow = window.innerHeight - targetRect.bottom;
+    const spaceAbove = targetRect.top;
+
+    let top = targetRect.bottom + 14;
+    let left = targetRect.left;
+
+    if (spaceBelow < 280 && spaceAbove > 280) {
+      top = targetRect.top - 290;
+    }
+
+    // Keep within horizontal bounds
+    if (left + 460 > window.innerWidth) {
+      left = window.innerWidth - 475;
+    }
+    if (left < 16) left = 16;
+
+    return {
+      top: `${Math.max(16, top)}px`,
+      left: `${Math.max(16, left)}px`,
+    };
+  };
 
   return (
     <>
-      {/* Floating Tour Launch Pill (Bottom Left) */}
+      {/* Floating Tour Launch Pill (Bottom-Left) */}
       <div className="product-tour-pill">
         <button
           className="product-tour-launch-btn"
@@ -183,126 +251,123 @@ export default function ProductTour() {
           onClick={() => {
             setCurrentStepIdx(0);
             setIsOpen(true);
+            setViewMode('spotlight');
           }}
-          title="Open interactive step-by-step product walkthrough"
+          title="Open interactive clickable product walkthrough"
         >
           <span className="product-tour-icon">🗺️</span>
-          <span className="product-tour-label">PRODUCT TOUR</span>
+          <span className="product-tour-label">CLICKABLE TOUR</span>
           <span className="product-tour-step-badge">5 STEPS</span>
         </button>
       </div>
 
-      {/* Interactive Modal Walkthrough */}
+      {/* Interactive Spotlight & Clickable Tour Portal */}
       {isOpen && mounted && createPortal(
-        <div
-          className="modal-backdrop"
-          onClick={() => setIsOpen(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="tour-dialog-title"
-        >
+        <div className="tour-spotlight-layer" role="dialog" aria-modal="true">
+          {/* Spotlight Cutout Overlay */}
+          {targetRect && (
+            <div
+              className="tour-spotlight-cutout"
+              style={{
+                top: `${targetRect.top - 6}px`,
+                left: `${targetRect.left - 6}px`,
+                width: `${targetRect.width + 12}px`,
+                height: `${targetRect.height + 12}px`,
+              }}
+              onClick={handleActionClick}
+              title="Click target element directly to execute"
+            />
+          )}
+
+          {/* Clickable Floating Tooltip Box */}
           <div
-            className="modal-card product-tour-card"
+            className="tour-spotlight-card"
+            style={getTooltipStyle()}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Window Top Titlebar */}
-            <div className="modal-header">
-              <span id="tour-dialog-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 16 }}>🗺️</span>
-                <span>OLD CASH PROTOCOL · INTERACTIVE PRODUCT TOUR</span>
+            {/* Window Bar */}
+            <div className="tour-spotlight-head">
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span className="ticker-live-dot" />
+                <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 11, textTransform: 'uppercase' }}>
+                  {current.tag}
+                </span>
               </span>
               <button
                 className="modal-close-btn"
-                type="button"
+                style={{ padding: '2px 6px', fontSize: 14 }}
                 onClick={() => setIsOpen(false)}
-                aria-label="Close product tour"
+                title="Exit tour (ESC)"
               >
                 ✕
               </button>
             </div>
 
-            {/* Stepper Progress Ribbon */}
-            <div className="tour-stepper-header">
-              <div className="tour-steps-row">
-                {TOUR_STEPS.map((s, idx) => (
-                  <button
-                    key={s.step}
-                    type="button"
-                    className={`tour-step-pill ${idx === currentStepIdx ? 'tour-step-pill--active' : idx < currentStepIdx ? 'tour-step-pill--done' : ''}`}
-                    onClick={() => setCurrentStepIdx(idx)}
-                  >
-                    <span>{idx < currentStepIdx ? '✓' : s.step}</span>
-                    <span className="tour-step-pill-text">{s.tag}</span>
-                  </button>
-                ))}
-              </div>
-              <div className="tour-progress-bar-wrap">
-                <div
-                  className="tour-progress-bar-fill"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
+            {/* Stepper Dots Row */}
+            <div className="tour-dots-ribbon">
+              {TOUR_STEPS.map((s, idx) => (
+                <button
+                  key={s.step}
+                  type="button"
+                  className={`tour-dot-btn ${idx === currentStepIdx ? 'tour-dot-btn--active' : idx < currentStepIdx ? 'tour-dot-btn--done' : ''}`}
+                  onClick={() => setCurrentStepIdx(idx)}
+                  title={`Jump to Step ${s.step}`}
+                >
+                  {idx < currentStepIdx ? '✓' : s.step}
+                </button>
+              ))}
+              <span className="tour-step-tagline">{currentStepIdx + 1} of 5</span>
             </div>
 
-            {/* Tour Body Content */}
-            <div className="modal-body tour-card-body">
-              <div className="tour-meta-row">
-                <span className="os-tag os-tag--magenta">{current.badge}</span>
-                <span className="os-tag os-tag--green">● LIVE SOLANA MAINNET</span>
-                <span className="tour-step-counter">{currentStepIdx + 1} of {TOUR_STEPS.length}</span>
-              </div>
+            {/* Body Description */}
+            <div className="tour-spotlight-body">
+              <h3 className="tour-card-h3">{current.title}</h3>
+              <p className="tour-card-p">{current.lead}</p>
 
-              <h2 className="tour-step-title">{current.title}</h2>
-              <p className="tour-step-lead">{current.lead}</p>
+              <ul className="tour-card-ul">
+                {current.bullets.map((b, i) => (
+                  <li key={i}>{b}</li>
+                ))}
+              </ul>
 
-              <div className="tour-step-box">
-                <div className="tour-box-title">⚡ PROTOCOL EXECUTION GUIDE:</div>
-                <ul className="tour-bullet-list">
-                  {current.bullets.map((b, i) => (
-                    <li key={i}>{b}</li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Direct In-Step Action Button */}
-              <div style={{ marginTop: 14 }}>
+              {/* Big Interactive Clickable Action Button */}
+              <div style={{ marginTop: 12 }}>
                 <button
                   type="button"
-                  className="os-btn os-btn--pink tour-action-jump-btn"
-                  onClick={() => handleStepAction(current)}
+                  className="os-btn os-btn--pink tour-execute-btn"
+                  onClick={handleActionClick}
                 >
-                  <span>{current.actionText}</span>
+                  <span>{current.actionLabel}</span>
                 </button>
               </div>
             </div>
 
-            {/* Modal Bottom Controls */}
-            <div className="tour-footer-controls">
+            {/* Bottom Controls */}
+            <div className="tour-spotlight-footer">
               <button
                 type="button"
-                className="os-btn tour-nav-btn"
+                className="os-btn tour-btn-sm"
                 disabled={currentStepIdx === 0}
                 onClick={handlePrev}
-                style={{ opacity: currentStepIdx === 0 ? 0.4 : 1 }}
+                style={{ opacity: currentStepIdx === 0 ? 0.35 : 1 }}
               >
-                ← Previous Step
+                ← Prev
               </button>
 
               <div style={{ display: 'flex', gap: 8 }}>
                 <button
                   type="button"
-                  className="os-btn tour-skip-btn"
+                  className="os-btn tour-skip-text"
                   onClick={() => setIsOpen(false)}
                 >
-                  Exit Tour
+                  Exit
                 </button>
-
                 <button
                   type="button"
-                  className="os-btn os-btn--dark tour-nav-btn"
+                  className="os-btn os-btn--dark tour-btn-sm"
                   onClick={handleNext}
                 >
-                  {currentStepIdx === TOUR_STEPS.length - 1 ? 'Finish Tour 🎉' : 'Next Step →'}
+                  {currentStepIdx === TOUR_STEPS.length - 1 ? 'Finish 🎉' : 'Next Step →'}
                 </button>
               </div>
             </div>

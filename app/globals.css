@@ -12528,152 +12528,189 @@ body {
   max-width: 620px;
 }
 
-.tour-stepper-header {
-  background: var(--grey-1);
-  border-bottom: var(--border) solid var(--ink);
-  padding: 10px 14px;
+/* ============================================================
+   CLICKABLE SPOTLIGHT PRODUCT TOUR
+   ============================================================ */
+
+.tour-spotlight-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 999998;
+  pointer-events: none;
 }
 
-.tour-steps-row {
+.tour-spotlight-cutout {
+  position: fixed;
+  border-radius: 4px;
+  box-shadow: 0 0 0 9999px rgba(10, 10, 15, 0.78), 0 0 25px rgba(243, 134, 161, 0.7);
+  border: 2px solid var(--pink);
+  z-index: 999999;
+  pointer-events: auto;
+  cursor: pointer;
+  animation: tourCutoutPulse 2s infinite ease-in-out;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes tourCutoutPulse {
+  0% {
+    box-shadow: 0 0 0 9999px rgba(10, 10, 15, 0.78), 0 0 15px rgba(243, 134, 161, 0.5);
+    border-color: var(--pink);
+  }
+  50% {
+    box-shadow: 0 0 0 9999px rgba(10, 10, 15, 0.78), 0 0 35px rgba(243, 134, 161, 0.9);
+    border-color: #ffffff;
+  }
+  100% {
+    box-shadow: 0 0 0 9999px rgba(10, 10, 15, 0.78), 0 0 15px rgba(243, 134, 161, 0.5);
+    border-color: var(--pink);
+  }
+}
+
+.tour-spotlight-card {
+  position: fixed;
+  width: 100%;
+  max-width: 460px;
+  background: var(--white);
+  border: var(--border) solid var(--ink);
+  box-shadow: 8px 8px 0 var(--ink);
+  z-index: 1000000;
+  pointer-events: auto;
   display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding-bottom: 8px;
+  flex-direction: column;
+  animation: modalPopCenter 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.tour-step-pill {
+.tour-spotlight-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--ink);
+  color: var(--grey-1);
+}
+
+.tour-dots-ribbon {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 10px;
-  background: var(--white);
+  padding: 8px 12px;
+  background: var(--grey-1);
+  border-bottom: 1px dashed var(--grey-2);
+}
+
+.tour-dot-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 2px;
   border: 1px solid var(--grey-3);
-  font-family: var(--font-mono);
+  background: var(--white);
+  font-family: var(--font-pixel);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  white-space: nowrap;
   transition: all 0.15s ease;
   color: var(--ink);
 }
 
-.tour-step-pill:hover {
+.tour-dot-btn:hover {
   border-color: var(--ink);
 }
 
-.tour-step-pill--active {
+.tour-dot-btn--active {
   background: var(--pink) !important;
   color: var(--ink) !important;
   border-color: var(--ink) !important;
-  font-weight: 700;
 }
 
-.tour-step-pill--done {
+.tour-dot-btn--done {
   background: #e2fbe8;
   border-color: var(--green);
   color: #0d5f2a;
 }
 
-.tour-progress-bar-wrap {
-  width: 100%;
-  height: 4px;
-  background: var(--grey-2);
-  margin-top: 2px;
-}
-
-.tour-progress-bar-fill {
-  height: 100%;
-  background: var(--magenta);
-  transition: width 0.25s ease-in-out;
-}
-
-.tour-card-body {
-  padding: 20px;
-}
-
-.tour-meta-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-
-.tour-step-counter {
+.tour-step-tagline {
   margin-left: auto;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
-  opacity: 0.7;
+  color: var(--ink-86);
 }
 
-.tour-step-title {
+.tour-spotlight-body {
+  padding: 16px;
+}
+
+.tour-card-h3 {
   font-family: var(--font-disp);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   margin-bottom: 6px;
   line-height: 1.25;
 }
 
-.tour-step-lead {
+.tour-card-p {
   font-size: 13px;
   color: var(--ink-86);
   line-height: 1.45;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
-.tour-step-box {
-  background: var(--grey-1);
-  border: 1px solid var(--grey-3);
-  padding: 12px 14px;
-}
-
-.tour-box-title {
-  font-family: var(--font-pixel);
-  font-size: 11px;
-  font-weight: 700;
-  margin-bottom: 8px;
-  letter-spacing: 0.05em;
-  color: var(--ink);
-}
-
-.tour-bullet-list {
-  margin: 0;
+.tour-card-ul {
+  margin: 0 0 12px 0;
   padding-left: 18px;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.6;
   color: var(--ink);
+  background: var(--grey-1);
+  border: 1px solid var(--grey-2);
+  padding: 10px 10px 10px 24px;
 }
 
-.tour-action-jump-btn {
+.tour-execute-btn {
   width: 100%;
   justify-content: center;
   padding: 10px 14px;
   font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
-.tour-footer-controls {
+.tour-spotlight-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 18px;
+  padding: 10px 14px;
   background: var(--grey-1);
   border-top: var(--border) solid var(--ink);
   gap: 10px;
 }
 
-.tour-nav-btn {
-  padding: 8px 14px;
+.tour-btn-sm {
+  padding: 6px 12px;
   font-size: 11px;
 }
 
-.tour-skip-btn {
+.tour-skip-text {
   background: transparent !important;
-  border: 1px dashed var(--grey-3) !important;
+  border: none !important;
   color: var(--ink-86) !important;
-  padding: 8px 12px;
   font-size: 11px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.tour-claim-pulse-active {
+  animation: claimBtnPulseFlash 0.5s 3 ease-in-out !important;
+}
+
+@keyframes claimBtnPulseFlash {
+  0% { transform: scale(1); box-shadow: 0 0 0 #ff3399; }
+  50% { transform: scale(1.05); box-shadow: 0 0 25px #ff3399; }
+  100% { transform: scale(1); box-shadow: 0 0 0 #ff3399; }
 }
 
 @media (max-width: 768px) {
@@ -12691,12 +12728,25 @@ body {
     display: none;
   }
 
-  .tour-step-title {
-    font-size: 17px;
+  .tour-spotlight-card {
+    position: fixed !important;
+    bottom: 14px !important;
+    top: auto !important;
+    left: 10px !important;
+    right: 10px !important;
+    max-width: calc(100vw - 20px) !important;
+    max-height: 85vh;
+    box-shadow: 4px 4px 0 var(--ink) !important;
   }
 
-  .tour-step-pill-text {
-    display: none;
+  .tour-card-h3 {
+    font-size: 16px;
+  }
+
+  .tour-spotlight-body {
+    padding: 12px;
+    max-height: calc(85vh - 90px);
+    overflow-y: auto;
   }
 }
 

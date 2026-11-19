@@ -85,7 +85,7 @@ export default function CrtRewardCard({
   };
 
   return (
-    <div className="crt-container-wrap">
+    <div className="crt-container-wrap" data-tour="crt-card">
       {/* ============================================================
           BIG CRT MEV REWARD HERO CARD
           ============================================================ */}
@@ -198,6 +198,7 @@ export default function CrtRewardCard({
             <div>
               <button
                 className="crt-huge-claim-btn crt-huge-claim-btn--aura"
+                data-tour="claim-btn"
                 type="button"
                 disabled={executingLive || accountsCount === 0}
                 onClick={() => {

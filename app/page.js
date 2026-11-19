@@ -107,7 +107,7 @@ export default function Page() {
             <a href="#protocols">Protocols</a>
             <a href="#matrix">Coverage</a>
             <a href="#faq">FAQ</a>
-            <Link href="/referral" className="nav-link-referral">🤝 Referrals (22%)</Link>
+            <Link href="/referral" className="nav-link-referral" data-tour="referral-nav">🤝 Referrals (22%)</Link>
           </nav>
 
           <div className="nav-right">

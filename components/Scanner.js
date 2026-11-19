@@ -486,10 +486,11 @@ export default function Scanner() {
         </div>
         <div className="os-window__frame">
           <div className="os-window__body big-search-box">
-            <div className="search-input-wrap">
+            <div className="search-input-wrap" data-tour="search-box">
               <span className="search-prompt">&gt;</span>
               <input
                 className="big-search-input"
+                data-tour="search-input"
                 type="text"
                 value={inputAddr}
                 onChange={(e) => setInputAddr(e.target.value)}
@@ -524,7 +525,7 @@ export default function Scanner() {
 
             {/* Quick Demo Wallets & Status */}
             <div className="search-meta-row">
-              <div className="demo-pills">
+              <div className="demo-pills" data-tour="demo-pills">
                 <span className="demo-label">Quick Demos:</span>
                 {DEMO_WALLETS.map((w) => (
                   <button

@@ -40,6 +40,7 @@ export default function WalletBar() {
             </div>
             <button
               className="os-btn os-btn--dark"
+              data-tour="connect-wallet"
               style={{ padding: '6px 12px', fontSize: 11 }}
               onClick={() => setModalOpen(true)}
             >
@@ -58,6 +59,7 @@ export default function WalletBar() {
         ) : (
           <button
             className="os-btn os-btn--dark"
+            data-tour="connect-wallet"
             style={{ padding: '8px 16px', fontSize: 12 }}
             onClick={() => setModalOpen(true)}
           >

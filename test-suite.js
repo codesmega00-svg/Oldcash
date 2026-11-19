@@ -101,6 +101,8 @@ async function runAllTests() {
   // 1.4 Product Tour & Onboarding Verification
   const tourContent = fs.readFileSync(path.join(compDir, 'ProductTour.js'), 'utf8');
   assert(tourContent.includes('TOUR_STEPS') && tourContent.includes('STEP 1 OF 5'), 'ProductTour.js includes 5-step guided walkthrough');
+  assert(tourContent.includes('tour-spotlight-cutout'), 'ProductTour.js includes interactive spotlight cutout');
+  assert(scannerContent.includes('data-tour="demo-pills"'), 'Scanner.js contains data-tour="demo-pills" for clickable tour target');
   assert(scannerContent.includes('🗺️ Product Tour'), 'Scanner.js contains 🗺️ Product Tour launcher button');
 
   // 1.4 Security Headers & Default Theme Check on Local Server
