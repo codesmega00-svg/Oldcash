@@ -7233,7 +7233,176 @@ table {
 }
 
 /* ============================================================
-   SOCIAL SHARING STATION
+   SHARABLE FLEX CARD WRAPPER & HOLOGRAPHIC BRANDING
+   ============================================================ */
+
+.crt-flex-card-wrapper {
+  position: relative;
+  padding: 3px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #ff007a, #7928ca, #0070f3, #00ffa3, #f59e0b, #ff007a);
+  background-size: 300% 300%;
+  animation: holoBorderSweep 8s ease infinite;
+  box-shadow: 0 0 25px rgba(0, 255, 163, 0.2), 6px 6px 0 var(--ink, #121212);
+  margin: 16px 14px 24px;
+}
+
+@keyframes holoBorderSweep {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.crt-hero-card--flex {
+  margin: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Top Branding Bar */
+.crt-flex-branding-bar {
+  background: #090d16;
+  color: #ffffff;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #1e293b;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.crt-flex-branding-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.crt-flex-logo-img {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+}
+
+.crt-flex-brand-name {
+  font-family: var(--font-disp, 'Cabinet Grotesk', sans-serif);
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.crt-flex-engine-tag {
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  color: #38bdf8;
+  margin-left: 6px;
+  background: rgba(56, 189, 248, 0.15);
+  padding: 2px 6px;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 2px;
+}
+
+.crt-flex-branding-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.crt-flex-live-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.crt-flex-status-pill {
+  font-family: var(--font-pixel, monospace);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.crt-flex-status-pill--whale {
+  background: #fdf2f8;
+  color: #ec4899;
+  border: 1px solid #ec4899;
+  box-shadow: 0 0 10px rgba(236, 72, 153, 0.4);
+  animation: pulseWhale 2s infinite ease-in-out;
+}
+
+@keyframes pulseWhale {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.02); }
+}
+
+.crt-flex-status-pill--clean {
+  background: #f0fdf4;
+  color: #10b981;
+  border: 1px solid #10b981;
+}
+
+/* CRT Agent Hologram Frame & Glare */
+.crt-agent-frame--holo {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.4), inset 0 0 15px rgba(56, 189, 248, 0.3) !important;
+}
+
+.crt-glass-glare {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Solana Logo Pulsing Glow */
+.crt-sol-logo--glow {
+  animation: solLogoGlow 3s ease-in-out infinite;
+}
+
+@keyframes solLogoGlow {
+  0%, 100% { filter: drop-shadow(0 2px 6px rgba(0, 255, 163, 0.4)); }
+  50% { filter: drop-shadow(0 2px 14px rgba(220, 31, 255, 0.7)); }
+}
+
+/* Card Footer Barcode & Meta */
+.crt-flex-card-footer {
+  background: #050811;
+  border-top: 1.5px solid #1e293b;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.crt-flex-barcode {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  color: #64748b;
+  letter-spacing: 0.08em;
+  user-select: none;
+}
+
+.crt-flex-footer-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ============================================================
+   SOCIAL SHARING STATION & MULTI-CHANNEL FLEX BUTTONS
    ============================================================ */
 
 .social-sharing-station {
@@ -7277,24 +7446,50 @@ table {
   margin-bottom: 14px;
 }
 
+.social-share-buttons--flex {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+}
+
 .social-share-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 9px 14px;
   font-family: var(--font-mono, monospace);
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
   border: 1.5px solid var(--ink);
   box-shadow: 2px 2px 0 var(--ink);
-  transition: all 0.12s ease;
+  transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .social-share-btn:hover {
-  transform: translateY(-1px);
+  transform: translate(-1px, -1px);
   box-shadow: 3px 3px 0 var(--ink);
+}
+
+.social-share-btn--download {
+  background: linear-gradient(135deg, #0f172a, #1e1b4b);
+  color: #38bdf8;
+  border-color: #38bdf8;
+  box-shadow: 2px 2px 0 #38bdf8;
+  animation: downloadPulse 3s infinite ease-in-out;
+}
+
+@keyframes downloadPulse {
+  0%, 100% { box-shadow: 2px 2px 0 #38bdf8; }
+  50% { box-shadow: 0 0 12px rgba(56, 189, 248, 0.6), 2px 2px 0 #38bdf8; }
+}
+
+.social-share-btn--download:hover {
+  background: #38bdf8;
+  color: #020617;
 }
 
 .social-share-btn--x {
@@ -7310,10 +7505,31 @@ table {
 .social-share-btn--tg {
   background: #229ed9;
   color: #ffffff;
+  border-color: #1b86b8;
 }
 
 .social-share-btn--tg:hover {
   background: #1b86b8;
+}
+
+.social-share-btn--wa {
+  background: #25d366;
+  color: #ffffff;
+  border-color: #128c7e;
+}
+
+.social-share-btn--wa:hover {
+  background: #128c7e;
+}
+
+.social-share-btn--discord {
+  background: #5865f2;
+  color: #ffffff;
+  border-color: #4752c4;
+}
+
+.social-share-btn--discord:hover {
+  background: #4752c4;
 }
 
 .social-share-btn--copy {
@@ -7325,6 +7541,12 @@ table {
   background: #fdf2f8;
   color: #db2777;
   border-color: #db2777;
+}
+
+.social-share-btn--native {
+  background: #f0fdfa;
+  color: #0d9488;
+  border-color: #0d9488;
 }
 
 /* Live Receipt Card Preview */
@@ -9023,7 +9245,176 @@ table {
 }
 
 /* ============================================================
-   SOCIAL SHARING STATION
+   SHARABLE FLEX CARD WRAPPER & HOLOGRAPHIC BRANDING
+   ============================================================ */
+
+.crt-flex-card-wrapper {
+  position: relative;
+  padding: 3px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #ff007a, #7928ca, #0070f3, #00ffa3, #f59e0b, #ff007a);
+  background-size: 300% 300%;
+  animation: holoBorderSweep 8s ease infinite;
+  box-shadow: 0 0 25px rgba(0, 255, 163, 0.2), 6px 6px 0 var(--ink, #121212);
+  margin: 16px 14px 24px;
+}
+
+@keyframes holoBorderSweep {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.crt-hero-card--flex {
+  margin: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Top Branding Bar */
+.crt-flex-branding-bar {
+  background: #090d16;
+  color: #ffffff;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #1e293b;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.crt-flex-branding-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.crt-flex-logo-img {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+}
+
+.crt-flex-brand-name {
+  font-family: var(--font-disp, 'Cabinet Grotesk', sans-serif);
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.crt-flex-engine-tag {
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  color: #38bdf8;
+  margin-left: 6px;
+  background: rgba(56, 189, 248, 0.15);
+  padding: 2px 6px;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 2px;
+}
+
+.crt-flex-branding-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.crt-flex-live-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.crt-flex-status-pill {
+  font-family: var(--font-pixel, monospace);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.crt-flex-status-pill--whale {
+  background: #fdf2f8;
+  color: #ec4899;
+  border: 1px solid #ec4899;
+  box-shadow: 0 0 10px rgba(236, 72, 153, 0.4);
+  animation: pulseWhale 2s infinite ease-in-out;
+}
+
+@keyframes pulseWhale {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.02); }
+}
+
+.crt-flex-status-pill--clean {
+  background: #f0fdf4;
+  color: #10b981;
+  border: 1px solid #10b981;
+}
+
+/* CRT Agent Hologram Frame & Glare */
+.crt-agent-frame--holo {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.4), inset 0 0 15px rgba(56, 189, 248, 0.3) !important;
+}
+
+.crt-glass-glare {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Solana Logo Pulsing Glow */
+.crt-sol-logo--glow {
+  animation: solLogoGlow 3s ease-in-out infinite;
+}
+
+@keyframes solLogoGlow {
+  0%, 100% { filter: drop-shadow(0 2px 6px rgba(0, 255, 163, 0.4)); }
+  50% { filter: drop-shadow(0 2px 14px rgba(220, 31, 255, 0.7)); }
+}
+
+/* Card Footer Barcode & Meta */
+.crt-flex-card-footer {
+  background: #050811;
+  border-top: 1.5px solid #1e293b;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.crt-flex-barcode {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  color: #64748b;
+  letter-spacing: 0.08em;
+  user-select: none;
+}
+
+.crt-flex-footer-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ============================================================
+   SOCIAL SHARING STATION & MULTI-CHANNEL FLEX BUTTONS
    ============================================================ */
 
 .social-sharing-station {
@@ -9067,24 +9458,50 @@ table {
   margin-bottom: 14px;
 }
 
+.social-share-buttons--flex {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+}
+
 .social-share-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 9px 14px;
   font-family: var(--font-mono, monospace);
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
   border: 1.5px solid var(--ink);
   box-shadow: 2px 2px 0 var(--ink);
-  transition: all 0.12s ease;
+  transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .social-share-btn:hover {
-  transform: translateY(-1px);
+  transform: translate(-1px, -1px);
   box-shadow: 3px 3px 0 var(--ink);
+}
+
+.social-share-btn--download {
+  background: linear-gradient(135deg, #0f172a, #1e1b4b);
+  color: #38bdf8;
+  border-color: #38bdf8;
+  box-shadow: 2px 2px 0 #38bdf8;
+  animation: downloadPulse 3s infinite ease-in-out;
+}
+
+@keyframes downloadPulse {
+  0%, 100% { box-shadow: 2px 2px 0 #38bdf8; }
+  50% { box-shadow: 0 0 12px rgba(56, 189, 248, 0.6), 2px 2px 0 #38bdf8; }
+}
+
+.social-share-btn--download:hover {
+  background: #38bdf8;
+  color: #020617;
 }
 
 .social-share-btn--x {
@@ -9100,10 +9517,31 @@ table {
 .social-share-btn--tg {
   background: #229ed9;
   color: #ffffff;
+  border-color: #1b86b8;
 }
 
 .social-share-btn--tg:hover {
   background: #1b86b8;
+}
+
+.social-share-btn--wa {
+  background: #25d366;
+  color: #ffffff;
+  border-color: #128c7e;
+}
+
+.social-share-btn--wa:hover {
+  background: #128c7e;
+}
+
+.social-share-btn--discord {
+  background: #5865f2;
+  color: #ffffff;
+  border-color: #4752c4;
+}
+
+.social-share-btn--discord:hover {
+  background: #4752c4;
 }
 
 .social-share-btn--copy {
@@ -9115,6 +9553,12 @@ table {
   background: #fdf2f8;
   color: #db2777;
   border-color: #db2777;
+}
+
+.social-share-btn--native {
+  background: #f0fdfa;
+  color: #0d9488;
+  border-color: #0d9488;
 }
 
 /* Live Receipt Card Preview */
@@ -11962,6 +12406,23 @@ body {
   }
 
   /* CRT Hero Card */
+  .crt-flex-card-wrapper {
+    margin: 12px 6px 18px;
+    padding: 2px;
+  }
+
+  .crt-flex-branding-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+
+  .crt-flex-branding-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .crt-hero-grid {
     grid-template-columns: 1fr !important;
   }
@@ -12302,6 +12763,10 @@ body {
     animation: none;
   }
 
+  .social-share-buttons--flex {
+    grid-template-columns: 1fr !important;
+  }
+
   .mascot-companion .mascot-card {
     width: 260px;
     box-shadow: 2px 2px 0 var(--ink);
@@ -12435,6 +12900,10 @@ body {
 
   .cr-brand-slogan {
     font-size: 10px;
+  }
+
+  .social-share-buttons--flex {
+    grid-template-columns: 1fr !important;
   }
 
   .mascot-companion .mascot-card {
