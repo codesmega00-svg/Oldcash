@@ -13,6 +13,7 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       'rpc-websockets': path.resolve(__dirname, 'node_modules/rpc-websockets/dist/index.browser.cjs'),
+      'bs58': path.resolve(__dirname, 'node_modules/bs58'),
     };
     return config;
   },
