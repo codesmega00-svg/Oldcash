@@ -7,60 +7,11 @@ import {
   RENT_PER_TOKEN_ACCOUNT_SOL,
   PROTOCOL_WALLET,
 } from '@/lib/config';
-
-const RPC_ENDPOINTS = [
-  process.env.SOLANA_RPC,
-  process.env.NEXT_PUBLIC_SOLANA_RPC,
-  'https://api.mainnet-beta.solana.com',
-  'https://solana-rpc.publicnode.com',
-].filter(Boolean);
+import { callRpcWithLoadBalancing, getRpcPoolHealth } from '@/lib/rpcPool';
 
 // 10-second in-memory LRU cache to prevent RPC rate limiting
 const referralCache = new Map();
 const CACHE_TTL_MS = 10_000;
-
-async function rpcCall(endpoint, method, params, timeoutMs = 7000) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        id: 1,
-        method,
-        params,
-      }),
-      signal: controller.signal,
-    });
-    if (!res.ok) {
-      throw new Error(`RPC HTTP ${res.status}: ${res.statusText}`);
-    }
-    const json = await res.json();
-    if (json.error) {
-      throw new Error(json.error.message || `RPC Error ${json.error.code}`);
-    }
-    return json.result;
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
-async function fetchRpcWithFallback(method, params) {
-  let lastErr;
-  for (const endpoint of RPC_ENDPOINTS) {
-    try {
-      return await rpcCall(endpoint, method, params);
-    } catch (err) {
-      lastErr = err;
-    }
-  }
-  throw lastErr || new Error('All Solana RPC endpoints failed');
-}
 
 // Generate dynamic graph timeframe points from real on-chain parameters
 function buildDynamicTimeframeData(activity, totalVolume, currentSlot, solPrice) {
@@ -246,7 +197,12 @@ export async function GET(req) {
 
     if (!isValidAddress(targetWallet)) {
       return NextResponse.json(
-        { error: 'Valid Solana base58 wallet address required' },
+        {
+          error: 'Valid Solana base58 wallet address required',
+          code: 'INVALID_SOLANA_ADDRESS',
+          status: 400,
+          timestamp: new Date().toISOString(),
+        },
         { status: 400 }
       );
     }
@@ -260,12 +216,12 @@ export async function GET(req) {
       }
     }
 
-    // Parallel fetch from live Solana Mainnet RPC
+    // Parallel fetch from live Solana Mainnet RPC using hedged load balancer
     const [currentSlot, balResult, signatures, protoSignatures] = await Promise.all([
-      fetchRpcWithFallback('getSlot', [{ commitment: 'confirmed' }]).catch(() => 470905000),
-      fetchRpcWithFallback('getBalance', [targetWallet, { commitment: 'confirmed' }]).catch(() => ({ value: 0 })),
-      fetchRpcWithFallback('getSignaturesForAddress', [targetWallet, { limit: 25 }]).catch(() => []),
-      fetchRpcWithFallback('getSignaturesForAddress', [PROTOCOL_WALLET, { limit: 15 }]).catch(() => []),
+      callRpcWithLoadBalancing('getSlot', [{ commitment: 'confirmed' }], { timeoutMs: 3000 }).catch(() => 473802000),
+      callRpcWithLoadBalancing('getBalance', [targetWallet, { commitment: 'confirmed' }], { timeoutMs: 3500 }).catch(() => ({ value: 0 })),
+      callRpcWithLoadBalancing('getSignaturesForAddress', [targetWallet, { limit: 25 }], { timeoutMs: 3500 }).catch(() => []),
+      callRpcWithLoadBalancing('getSignaturesForAddress', [PROTOCOL_WALLET, { limit: 15 }], { timeoutMs: 3500 }).catch(() => []),
     ]);
 
     const lamports = balResult?.value || 0;
@@ -406,6 +362,7 @@ export async function GET(req) {
       activity: isNetworkQuery ? networkActivity : userActivity,
       timeframeData,
       networkTimeframeData,
+      rpcPool: getRpcPoolHealth(),
       fetchedAt: new Date().toISOString(),
     };
 
@@ -418,7 +375,12 @@ export async function GET(req) {
     return NextResponse.json(result);
   } catch (err) {
     return NextResponse.json(
-      { error: err?.message || 'Failed to fetch on-chain referral data' },
+      {
+        error: err?.message || 'Failed to process referral analytics',
+        code: err?.code || 'REFERRAL_API_ERROR',
+        status: 500,
+        timestamp: new Date().toISOString(),
+      },
       { status: 500 }
     );
   }

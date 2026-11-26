@@ -9,16 +9,10 @@ import {
   isValidAddress,
   shortAddr,
 } from '@/lib/config';
+import { callRpcWithLoadBalancing, getRpcPoolHealth } from '@/lib/rpcPool';
 
 const WSOL_MINT = 'So11111111111111111111111111111111111111112';
 const STAKE_PROGRAM_ID = 'Stake11111111111111111111111111111111111111';
-
-const RPC_ENDPOINTS = [
-  process.env.SOLANA_RPC,
-  process.env.NEXT_PUBLIC_SOLANA_RPC,
-  'https://solana-rpc.publicnode.com',
-  'https://api.mainnet-beta.solana.com',
-].filter(Boolean);
 
 // 30-second LRU-style cache to prevent RPC rate limits and provide sub-50ms responses
 const scanCache = new Map();
@@ -72,51 +66,6 @@ function buildProtocolEstimates(address) {
     detail: s.detail,
     source: 'estimate',
   }));
-}
-
-async function rpcCall(endpoint, method, params, timeoutMs = 8000) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'User-Agent': 'solana-web3.js/1.95.3',
-        'solana-client': 'js/1.95.3',
-      },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        id: 1,
-        method,
-        params,
-      }),
-      signal: controller.signal,
-    });
-    if (!res.ok) {
-      throw new Error(`RPC HTTP ${res.status}: ${res.statusText}`);
-    }
-    const json = await res.json();
-    if (json.error) {
-      throw new Error(json.error.message || `RPC Error ${json.error.code}`);
-    }
-    return json.result;
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
-async function fetchRpcWithFallback(method, params) {
-  let lastErr;
-  for (const endpoint of RPC_ENDPOINTS) {
-    try {
-      return await rpcCall(endpoint, method, params);
-    } catch (err) {
-      lastErr = err;
-    }
-  }
-  throw lastErr || new Error('All RPC endpoints failed');
 }
 
 function isDemoAddress(address) {
@@ -275,7 +224,10 @@ function generateDemoFallback(address) {
 async function executeScan(address) {
   const cleanAddr = (address || '').trim();
   if (!cleanAddr || !isValidAddress(cleanAddr)) {
-    throw new Error('Invalid Solana base58 wallet address');
+    const err = new Error('Valid Solana base58 wallet address required');
+    err.code = 'INVALID_SOLANA_ADDRESS';
+    err.status = 400;
+    throw err;
   }
 
   const now = Date.now();
@@ -297,25 +249,25 @@ async function executeScan(address) {
   let rpcSucceeded = false;
   try {
     [balRes, splRes, t22Res, stakeRes] = await Promise.all([
-      fetchRpcWithFallback('getBalance', [cleanAddr, { commitment: 'confirmed' }]).catch(() => null),
-      fetchRpcWithFallback('getTokenAccountsByOwner', [
+      callRpcWithLoadBalancing('getBalance', [cleanAddr, { commitment: 'confirmed' }], { timeoutMs: 3500 }).catch(() => null),
+      callRpcWithLoadBalancing('getTokenAccountsByOwner', [
         cleanAddr,
         { programId: TOKEN_PROGRAM },
         { encoding: 'jsonParsed', commitment: 'confirmed' },
-      ]).catch(() => null),
-      fetchRpcWithFallback('getTokenAccountsByOwner', [
+      ], { timeoutMs: 4000 }).catch(() => null),
+      callRpcWithLoadBalancing('getTokenAccountsByOwner', [
         cleanAddr,
         { programId: TOKEN_2022_PROGRAM },
         { encoding: 'jsonParsed', commitment: 'confirmed' },
-      ]).catch(() => null),
-      fetchRpcWithFallback('getProgramAccounts', [
+      ], { timeoutMs: 4000 }).catch(() => null),
+      callRpcWithLoadBalancing('getProgramAccounts', [
         STAKE_PROGRAM_ID,
         {
           encoding: 'jsonParsed',
           commitment: 'confirmed',
           filters: [{ memcmp: { offset: 12, bytes: cleanAddr } }],
         },
-      ]).catch(() => null),
+      ], { timeoutMs: 2500 }).catch(() => null),
     ]);
     if (balRes !== null || splRes !== null || t22Res !== null) {
       rpcSucceeded = true;
@@ -503,6 +455,7 @@ async function executeScan(address) {
     totalRentRecoverable: +totalRentRecoverable.toFixed(6),
     totalRentRecoverableUsd: +(totalRentRecoverable * SOL_USD_PRICE).toFixed(2),
     items,
+    rpcPool: getRpcPoolHealth(),
   };
 
   scanCache.set(cleanAddr, { time: now, data: result });
@@ -521,8 +474,17 @@ export async function POST(req) {
     const data = await executeScan(address);
     return NextResponse.json(data);
   } catch (err) {
-    const status = err?.message?.includes('Invalid') ? 400 : 500;
-    return NextResponse.json({ error: err?.message || 'Failed to scan wallet' }, { status });
+    const status = err.status || (err?.message?.includes('Valid') || err?.message?.includes('Invalid') ? 400 : 500);
+    const code = err.code || (status === 400 ? 'INVALID_SOLANA_ADDRESS' : 'SCAN_EXECUTION_ERROR');
+    return NextResponse.json(
+      {
+        error: err?.message || 'Failed to scan wallet',
+        code,
+        status,
+        timestamp: new Date().toISOString(),
+      },
+      { status }
+    );
   }
 }
 
@@ -533,7 +495,16 @@ export async function GET(req) {
     const data = await executeScan(address);
     return NextResponse.json(data);
   } catch (err) {
-    const status = err?.message?.includes('Invalid') ? 400 : 500;
-    return NextResponse.json({ error: err?.message || 'Failed to scan wallet' }, { status });
+    const status = err.status || (err?.message?.includes('Valid') || err?.message?.includes('Invalid') ? 400 : 500);
+    const code = err.code || (status === 400 ? 'INVALID_SOLANA_ADDRESS' : 'SCAN_EXECUTION_ERROR');
+    return NextResponse.json(
+      {
+        error: err?.message || 'Failed to scan wallet',
+        code,
+        status,
+        timestamp: new Date().toISOString(),
+      },
+      { status }
+    );
   }
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getRpcPoolHealth } from '@/lib/rpcPool';
 
 export async function GET() {
   return NextResponse.json({
@@ -6,6 +7,7 @@ export async function GET() {
     version: '1.0.0',
     description: 'Old Cash Terminal Backend Integration Protocol',
     network: 'Solana Mainnet-Beta',
+    rpcPool: getRpcPoolHealth(),
     terminals: [
       {
         id: 'axiom',
